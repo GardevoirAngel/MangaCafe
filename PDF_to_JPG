@@ -1,0 +1,41 @@
+import pymupdf  # Import as 'fitz' if using an older alias
+import os
+
+def pdf_to_jpgs(pdf_path, output_dir="C:\\Users\\pezgu\\PyDev\\AI Projects\\Manga Cafe\\Manga_Pages\\Shonen Jump JPGs", quality=85, dpi=150):
+    """
+    Convert all pages of a PDF to JPG images.
+    
+    Args:
+    - pdf_path (str): Path to the input PDF file.
+    - output_dir (str): Directory to save JPGs (created if it doesn't exist).
+    - quality (int): JPG quality (1-100; higher = better quality, larger files).
+    - dpi (int): Resolution in dots per inch (default 150 for balance of quality/size).
+    """
+    # Create output directory
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Load the PDF
+    doc = pymupdf.open(pdf_path)
+    
+    # Get base filename without extension
+    base_name = os.path.splitext(os.path.basename(pdf_path))[0]
+    
+    # Loop through each page
+    for i in range(doc.page_count):
+        page = doc[i]  # Load page by index (0-based)
+        
+        # Render page to pixmap (image) at specified DPI
+        mat = pymupdf.Matrix(dpi / 72, dpi / 72)  # Scale matrix for DPI
+        pix = page.get_pixmap(matrix=mat)
+        
+        # Save as JPG
+        output_path = os.path.join(output_dir, f"{base_name}_page_{i+1}.jpg")
+        pix.save(output_path, jpg_quality=quality)
+        print(f"Saved: {output_path}")
+    
+    # Clean up
+    doc.close()
+    print(f"Converted {doc.page_count} pages from {pdf_path}")
+
+# Example usage
+pdf_to_jpgs("YourPDFHere.pdf", quality=100, dpi=300) # For maximum quality, scale as appropriate
