@@ -1,0 +1,2 @@
+# MangaCafe
+Manga Machine Translation
